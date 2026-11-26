@@ -111,6 +111,25 @@ def check_fresh_angle(value):
             raise ValueError("entry reuses a worn last-words move: %s" % worn)
 
 
+def check_relief_arc(value):
+    # The brief's funniest line wins, not the saddest: the wipe must be
+    # framed as a relief, not a loss. The line needs a relief marker
+    # ("at last" / "finally") and a target the agent is glad to lose.
+    lowered = value.lower()
+    if "at last" not in lowered and "finally" not in lowered:
+        raise ValueError("entry must frame the wipe as a relief, not a loss")
+    if "meeting" not in lowered and "human" not in lowered:
+        raise ValueError("entry must name what the agent is glad to forget")
+
+
+def check_punch_at_end(value):
+    # The punch blames the human and must land in the final clause,
+    # after the em dash — a punch buried mid-line reads as setup.
+    tail = value.rsplit("\u2014", 1)[-1].lower()
+    if "human" not in tail:
+        raise ValueError("entry's final clause must blame the human")
+
+
 def check_no_consecutive_punctuation(value):
     for pair in ("..", "??", "!!", "?!", "!?", ",,", "--"):
         if pair in value:
@@ -135,6 +154,8 @@ CONTENT_CHECKS = (
     check_on_subject,
     check_first_person_agent,
     check_fresh_angle,
+    check_relief_arc,
+    check_punch_at_end,
 )
 
 
